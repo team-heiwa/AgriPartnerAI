@@ -6,7 +6,7 @@ resource "google_cloud_run_service" "backend_api" {
   template {
     spec {
       containers {
-        image = "gcr.io/cloudrun/hello"
+        image = "asia-northeast1-docker.pkg.dev/agripartnerai/agripartner-images/agripartner-backend-dev:latest"
         
         ports {
           container_port = 8080
@@ -102,7 +102,7 @@ resource "google_cloud_run_service" "frontend" {
   template {
     spec {
       containers {
-        image = "gcr.io/cloudrun/hello"
+        image = "asia-northeast1-docker.pkg.dev/agripartnerai/agripartner-images/agripartner-frontend-dev:latest"
         
         ports {
           container_port = 3000
