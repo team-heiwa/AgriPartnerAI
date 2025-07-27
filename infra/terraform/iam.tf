@@ -44,11 +44,11 @@ resource "google_storage_bucket_iam_member" "temp_bucket_access" {
   member = "serviceAccount:${google_service_account.pipeline_sa.email}"
 }
 
-# Service account key for local development
-resource "google_service_account_key" "pipeline_sa_key" {
-  service_account_id = google_service_account.pipeline_sa.name
-  private_key_type   = "TYPE_GOOGLE_CREDENTIALS_FILE"
-}
+# Service account key for local development (temporarily disabled)
+# resource "google_service_account_key" "pipeline_sa_key" {
+#   service_account_id = google_service_account.pipeline_sa.name
+#   private_key_type   = "TYPE_GOOGLE_CREDENTIALS_FILE"
+# }
 
 # Frontend service account
 resource "google_service_account" "frontend_sa" {

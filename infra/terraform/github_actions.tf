@@ -53,6 +53,7 @@ resource "google_project_iam_member" "github_actions_roles" {
     "roles/logging.logWriter",
     "roles/resourcemanager.projectIamAdmin",
     "roles/iam.workloadIdentityPoolAdmin",
+    "roles/iam.serviceAccountAdmin",
   ])
 
   project = var.project_id

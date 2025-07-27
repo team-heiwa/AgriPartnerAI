@@ -23,11 +23,11 @@ output "service_account_email" {
   value       = google_service_account.pipeline_sa.email
 }
 
-output "service_account_key" {
-  description = "Base64 encoded service account key (handle with care!)"
-  value       = google_service_account_key.pipeline_sa_key.private_key
-  sensitive   = true
-}
+# output "service_account_key" {
+#   description = "Base64 encoded service account key (handle with care!)"
+#   value       = google_service_account_key.pipeline_sa_key.private_key
+#   sensitive   = true
+# }
 
 # Cloud Run service URLs
 output "backend_api_url" {
