@@ -12,6 +12,7 @@ resource "google_project_iam_member" "pipeline_roles" {
     "roles/storage.objectCreator",
     "roles/aiplatform.user",
     "roles/logging.logWriter",
+    "roles/iam.serviceAccountTokenCreator",
   ])
   
   project = var.project_id
@@ -42,4 +43,22 @@ resource "google_storage_bucket_iam_member" "temp_bucket_access" {
 resource "google_service_account_key" "pipeline_sa_key" {
   service_account_id = google_service_account.pipeline_sa.name
   private_key_type   = "TYPE_GOOGLE_CREDENTIALS_FILE"
+}
+
+# Frontend service account
+resource "google_service_account" "frontend_sa" {
+  account_id   = "frontend-${var.environment}"
+  display_name = "Frontend Service Account (${var.environment})"
+  description  = "Service account for Next.js frontend"
+}
+
+# Frontend service account roles
+resource "google_project_iam_member" "frontend_roles" {
+  for_each = toset([
+    "roles/run.invoker",
+  ])
+  
+  project = var.project_id
+  role    = each.key
+  member  = "serviceAccount:${google_service_account.frontend_sa.email}"
 }

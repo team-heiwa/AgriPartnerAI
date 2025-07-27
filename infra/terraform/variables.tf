@@ -26,3 +26,27 @@ variable "output_bucket_retention_days" {
   type        = number
   default     = 90
 }
+
+variable "vertex_ai_model" {
+  description = "Vertex AI model to use for processing"
+  type        = string
+  default     = "gemini-1.5-flash"
+}
+
+variable "allow_public_access" {
+  description = "Allow public access to Cloud Run services"
+  type        = bool
+  default     = true
+}
+
+variable "custom_domain" {
+  description = "Custom domain for frontend"
+  type        = string
+  default     = ""
+}
+
+variable "backend_custom_domain" {
+  description = "Custom domain for backend API"
+  type        = string
+  default     = ""
+}

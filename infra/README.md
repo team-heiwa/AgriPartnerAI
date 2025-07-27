@@ -1,81 +1,123 @@
-# Infrastructure Configuration
+# AgriPartner AI Infrastructure
 
-This directory contains Terraform configurations for provisioning GCP resources required by the AgriPartner AI pipeline.
+This directory contains Terraform configuration for deploying the AgriPartner AI infrastructure on Google Cloud Platform.
 
 ## Prerequisites
 
-1. Google Cloud SDK installed
-2. Terraform >= 1.5.0
-3. GCP Project with billing enabled
-4. Appropriate IAM permissions
+1. **Google Cloud Project**: Create a GCP project and enable billing
+2. **Terraform**: Install Terraform >= 1.5.0
+3. **Google Cloud SDK**: Install and authenticate with `gcloud auth application-default login`
+4. **GCS Bucket for State**: Create a bucket for Terraform state storage
 
-## Setup
+## Setup Steps
 
-1. **Initialize GCP Authentication**
-   ```bash
-   gcloud auth application-default login
-   gcloud config set project YOUR_PROJECT_ID
-   ```
+### 1. Authentication
+```bash
+gcloud auth application-default login
+gcloud config set project YOUR_PROJECT_ID
+```
 
-2. **Create Terraform State Bucket**
-   ```bash
-   gsutil mb gs://agripartner-terraform-state
-   gsutil versioning set on gs://agripartner-terraform-state
-   ```
+### 2. Create State Bucket
+```bash
+gsutil mb gs://your-project-terraform-state
+gsutil versioning set on gs://your-project-terraform-state
+```
 
-3. **Configure Terraform Variables**
-   ```bash
-   cd terraform
-   cp terraform.tfvars.example terraform.tfvars
-   # Edit terraform.tfvars with your values
-   ```
+### 3. Configure Variables
+```bash
+cd terraform
+cp terraform.tfvars.example terraform.tfvars
+# Edit terraform.tfvars with your project settings
+```
 
-4. **Initialize Terraform**
-   ```bash
-   terraform init
-   ```
+### 4. Update State Bucket
+Edit `main.tf` and update the backend configuration:
+```hcl
+backend "gcs" {
+  bucket = "your-project-terraform-state"  # Update this
+  prefix = "terraform/state"
+}
+```
 
-5. **Plan and Apply**
-   ```bash
-   terraform plan
-   terraform apply
-   ```
+### 5. Deploy Infrastructure
+```bash
+terraform init
+terraform plan
+terraform apply
+```
 
-## Resources Created
+## Required Variables
 
-- **Cloud Storage Buckets**
-  - Input bucket: For uploading media files
-  - Output bucket: For storing processed results
-  - Temp bucket: For intermediate processing
+- `project_id`: Your GCP project ID
+- `region`: GCP region (default: us-central1)
+- `environment`: Environment name (dev/staging/prod)
 
-- **IAM**
-  - Service Account: `pipeline-processor-{env}`
-  - Roles: Storage access, Vertex AI access, Logging
+## Optional Variables
 
-- **APIs Enabled**
-  - Cloud Storage API
-  - Vertex AI API
-  - IAM API
-  - Cloud Resource Manager API
-  - Cloud Logging API
+- `vertex_ai_model`: Vertex AI model to use (default: gemini-1.5-flash)
+- `allow_public_access`: Allow public access to services (default: true)
+- `custom_domain`: Custom domain for frontend
+- `backend_custom_domain`: Custom domain for backend API
+- `input_bucket_retention_days`: Input bucket retention (default: 30 days)
+- `output_bucket_retention_days`: Output bucket retention (default: 90 days)
+
+## Infrastructure Components
+
+### Storage
+- **Input Bucket**: For uploading raw files (images/audio)
+- **Output Bucket**: For processed results
+- **Temp Bucket**: For temporary processing files
+
+### Compute
+- **Cloud Run**: 
+  - Backend API (FastAPI)
+  - Frontend (Next.js)
+- **Cloud Functions**:
+  - File processor (triggered by GCS uploads)
+  - Batch processor (HTTP triggered)
+
+### AI/ML
+- **Vertex AI**: For image and audio processing
+
+### Security
+- **Service Accounts**: Separate accounts for pipeline and frontend
+- **IAM Roles**: Minimal required permissions
+- **Private Keys**: For local development (stored securely)
 
 ## Outputs
 
-After applying, Terraform will output:
+After deployment, Terraform will output:
+- Service URLs for backend and frontend
 - Bucket names
-- Service account email
-- Service account key (base64 encoded)
+- Service account emails
+- Function URLs
 
-## Service Account Key
+## Development Workflow
 
-To use the service account locally:
+1. **Local Development**: Use service account key for authentication
+2. **Testing**: Deploy to dev environment first
+3. **Production**: Use separate project/environment
 
+## Security Notes
+
+- Service account keys are sensitive - handle with care
+- Enable audit logging in production
+- Use custom domains with SSL certificates
+- Restrict public access in production environments
+
+## Troubleshooting
+
+### Common Issues
+1. **API Not Enabled**: Enable required APIs in GCP Console
+2. **Permissions**: Ensure service account has required roles
+3. **Quotas**: Check GCP quotas for Cloud Run/Functions
+
+### Enable Required APIs
 ```bash
-# Get the key from Terraform output
-terraform output -raw service_account_key | base64 -d > service-account-key.json
-
-# Set environment variable
-export GOOGLE_APPLICATION_CREDENTIALS="$(pwd)/service-account-key.json"
+gcloud services enable storage.googleapis.com
+gcloud services enable aiplatform.googleapis.com
+gcloud services enable run.googleapis.com
+gcloud services enable cloudfunctions.googleapis.com
+gcloud services enable cloudbuild.googleapis.com
+gcloud services enable artifactregistry.googleapis.com
 ```
-
-⚠️ **Security Note**: Never commit service account keys to version control!

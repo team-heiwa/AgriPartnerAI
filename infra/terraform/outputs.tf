@@ -28,3 +28,42 @@ output "service_account_key" {
   value       = google_service_account_key.pipeline_sa_key.private_key
   sensitive   = true
 }
+
+# Cloud Run service URLs
+output "backend_api_url" {
+  description = "URL of the backend API Cloud Run service"
+  value       = google_cloud_run_service.backend_api.status[0].url
+}
+
+output "frontend_url" {
+  description = "URL of the frontend Cloud Run service"
+  value       = google_cloud_run_service.frontend.status[0].url
+}
+
+# Frontend service account
+output "frontend_service_account_email" {
+  description = "Email of the frontend service account"
+  value       = google_service_account.frontend_sa.email
+}
+
+# Cloud Functions URLs (disabled for now)
+# output "file_processor_function_url" {
+#   description = "URL of the file processor Cloud Function"
+#   value       = google_cloudfunctions2_function.file_processor.url
+# }
+
+# output "batch_processor_function_url" {
+#   description = "URL of the batch processor Cloud Function"
+#   value       = google_cloudfunctions2_function.batch_processor.url
+# }
+
+# Custom domains (if configured)
+output "frontend_custom_domain" {
+  description = "Custom domain for frontend (if configured)"
+  value       = var.custom_domain != "" ? var.custom_domain : null
+}
+
+output "backend_custom_domain" {
+  description = "Custom domain for backend API (if configured)"
+  value       = var.backend_custom_domain != "" ? var.backend_custom_domain : null
+}
