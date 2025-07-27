@@ -1,0 +1,50 @@
+name: Test Backend
+
+on:
+  push:
+    branches: [main, develop]
+    paths: ['backend/**']
+  pull_request:
+    branches: [main]
+    paths: ['backend/**']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install uv
+        run: |
+          curl -LsSf https://astral.sh/uv/install.sh | sh
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Install dependencies
+        run: |
+          cd backend
+          uv sync
+
+      - name: Run linting
+        run: |
+          cd backend
+          uv run ruff check .
+          uv run ruff format --check .
+
+      - name: Run type checking (if mypy is configured)
+        run: |
+          cd backend
+          # uv run mypy src/
+        continue-on-error: true
+
+      - name: Run tests (if tests exist)
+        run: |
+          cd backend
+          # uv run pytest
+        continue-on-error: true

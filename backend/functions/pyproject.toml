@@ -1,0 +1,20 @@
+[project]
+name = "agripartner-functions"
+version = "0.1.0"
+description = "Cloud Functions for AgriPartner AI processing pipeline"
+requires-python = ">=3.11"
+dependencies = [
+    "functions-framework>=3.5.0",
+    "google-cloud-storage>=2.10.0",
+    "google-cloud-aiplatform>=1.38.0",
+]
+
+[tool.ruff]
+extend = "../ruff.toml"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "UP"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

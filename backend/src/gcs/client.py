@@ -8,6 +8,8 @@ from pathlib import Path
 
 from google.cloud import storage
 from google.cloud.exceptions import NotFound, Forbidden
+from google.auth import impersonated_credentials
+from google.auth import default
 from pydantic import BaseModel
 
 
@@ -23,7 +25,22 @@ class GCSClient:
     """Google Cloud Storage client for file operations."""
     
     def __init__(self):
+        # Get default credentials and create impersonated credentials for signing
+        source_credentials, project_id = default()
+        
+        # Service account email for impersonation
+        service_account_email = os.getenv("GOOGLE_APPLICATION_CREDENTIALS_SERVICE_ACCOUNT") or f"pipeline-processor-dev@{project_id}.iam.gserviceaccount.com"
+        
+        # Create impersonated credentials for signing
+        self.signing_credentials = impersonated_credentials.Credentials(
+            source_credentials=source_credentials,
+            target_principal=service_account_email,
+            target_scopes=["https://www.googleapis.com/auth/cloud-platform"],
+        )
+        
+        # Create storage client with regular credentials for operations
         self.client = storage.Client()
+        
         self.input_bucket_name = os.getenv("GCS_INPUT_BUCKET")
         self.output_bucket_name = os.getenv("GCS_OUTPUT_BUCKET")
         self.temp_bucket_name = os.getenv("GCS_TEMP_BUCKET")
@@ -63,11 +80,13 @@ class GCSClient:
         # Generate presigned URL for PUT operation
         expires_at = datetime.now() + timedelta(minutes=expires_in_minutes)
         
+        # Use impersonated credentials for signing
         url = blob.generate_signed_url(
             version="v4",
             expiration=expires_at,
             method="PUT",
             content_type=content_type,
+            credentials=self.signing_credentials,
             headers={
                 "Content-Type": content_type,
                 "Content-Length-Range": f"0,{max_file_size_mb * 1024 * 1024}"
