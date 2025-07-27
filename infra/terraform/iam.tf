@@ -13,6 +13,9 @@ resource "google_project_iam_member" "pipeline_roles" {
     "roles/aiplatform.user",
     "roles/logging.logWriter",
     "roles/iam.serviceAccountTokenCreator",
+    "roles/artifactregistry.writer",
+    "roles/run.developer",
+    "roles/iam.serviceAccountUser",
   ])
   
   project = var.project_id
