@@ -29,9 +29,11 @@ ENV PORT=8080
 # Install pnpm runtime (small footprint)
 RUN corepack enable && corepack prepare pnpm@8.15.3 --activate
 
-# Copy the minimal standalone output and public assets
+# Copy the minimal standalone output
 COPY --from=builder /app/.next/standalone ./
-COPY --from=builder /app/public ./public
+
+# Copy static assets from .next/static
+COPY --from=builder /app/.next/static ./.next/static
 
 EXPOSE 8080
 CMD ["node", "server.js"] 
