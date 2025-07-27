@@ -17,6 +17,7 @@ resource "google_project_iam_member" "pipeline_roles" {
     "roles/run.developer",
     "roles/iam.serviceAccountUser",
     "roles/speech.editor",
+    "roles/eventarc.eventReceiver",
   ])
   
   project = var.project_id
