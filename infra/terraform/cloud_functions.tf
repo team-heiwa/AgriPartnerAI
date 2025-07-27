@@ -47,39 +47,10 @@ resource "google_cloudfunctions2_function" "file_processor" {
   }
 }
 
-# Cloud Function for batch processing
-resource "google_cloudfunctions2_function" "batch_processor" {
-  name     = "agripartner-batch-processor-${var.environment}"
-  location = var.region
-
-  build_config {
-    runtime     = "python311"
-    entry_point = "process_batch"
-    source {
-      storage_source {
-        bucket = google_storage_bucket.functions_source.name
-        object = google_storage_bucket_object.function_source.name
-      }
-    }
-  }
-
-  service_config {
-    max_instance_count = 1
-    min_instance_count = 0
-    available_memory   = "2Gi"
-    timeout_seconds    = 3600
-    
-    environment_variables = {
-      GCP_PROJECT_ID     = var.project_id
-      GCS_INPUT_BUCKET   = google_storage_bucket.input_bucket.name
-      GCS_OUTPUT_BUCKET  = google_storage_bucket.output_bucket.name
-      VERTEX_AI_LOCATION = var.region
-      VERTEX_AI_MODEL    = var.vertex_ai_model
-    }
-    
-    service_account_email = google_service_account.pipeline_sa.email
-  }
-}
+# TODO: Add batch processing function later
+# resource "google_cloudfunctions2_function" "batch_processor" {
+#   # Will be implemented after event-triggered function is working
+# }
 
 # Storage bucket for Cloud Functions source code
 resource "google_storage_bucket" "functions_source" {
@@ -101,4 +72,13 @@ data "archive_file" "function_source" {
   type        = "zip"
   output_path = "/tmp/function-source.zip"
   source_dir  = "${path.module}/../../backend/functions"
+}
+
+# Grant Eventarc service agent access to storage buckets
+data "google_project" "project" {}
+
+resource "google_storage_bucket_iam_member" "eventarc_gcs_access" {
+  bucket = google_storage_bucket.input_bucket.name
+  role   = "roles/storage.objectViewer"
+  member = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-eventarc.iam.gserviceaccount.com"
 }

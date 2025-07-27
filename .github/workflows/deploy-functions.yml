@@ -1,0 +1,58 @@
+name: Deploy Cloud Functions
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'backend/functions/**'
+      - '.github/workflows/deploy-functions.yml'
+  workflow_dispatch:
+
+env:
+  PROJECT_ID: agripartnerai
+  REGION: asia-northeast1
+  FUNCTION_NAME: agripartner-file-processor-dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy Cloud Function
+        run: |
+          gcloud functions deploy ${{ env.FUNCTION_NAME }} \
+            --gen2 \
+            --runtime=python311 \
+            --region=${{ env.REGION }} \
+            --source=backend/functions \
+            --entry-point=process_uploaded_file \
+            --trigger-event-filters="type=google.cloud.storage.object.v1.finalized" \
+            --trigger-event-filters="bucket=agripartnerai-pipeline-input-dev" \
+            --trigger-location=${{ env.REGION }} \
+            --service-account=pipeline-processor-dev@${{ env.PROJECT_ID }}.iam.gserviceaccount.com \
+            --memory=1Gi \
+            --timeout=540s \
+            --max-instances=10 \
+            --min-instances=0 \
+            --set-env-vars="GCP_PROJECT_ID=${{ env.PROJECT_ID }},GCS_INPUT_BUCKET=agripartnerai-pipeline-input-dev,GCS_OUTPUT_BUCKET=agripartnerai-pipeline-output-dev,GCS_TEMP_BUCKET=agripartnerai-pipeline-temp-dev,VERTEX_AI_LOCATION=${{ env.REGION }},VERTEX_AI_MODEL=gemini-1.5-flash,ENVIRONMENT=dev"
+
+      - name: Verify deployment
+        run: |
+          echo "Function deployment status:"
+          gcloud functions describe ${{ env.FUNCTION_NAME }} --region=${{ env.REGION }} --format="value(state)"

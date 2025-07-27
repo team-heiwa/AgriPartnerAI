@@ -2,7 +2,7 @@
 project_id = "agripartnerai"
 
 # Required: GCP Region
-region = "asia-southeast1"
+region = "asia-northeast1"
 
 # Required: Environment
 environment = "dev"
