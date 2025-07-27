@@ -1,0 +1,13 @@
+# Terraform
+terraform/.terraform/
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/terraform.tfvars
+!terraform/terraform.tfvars.example
+
+# Terraform lock file
+terraform/.terraform.lock.hcl
+
+# Service account keys
+terraform/service-account-key.json
+terraform/*-key.json
