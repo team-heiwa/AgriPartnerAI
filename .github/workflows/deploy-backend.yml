@@ -44,8 +44,10 @@ jobs:
         run: |
           cd backend
           IMAGE_URI="${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:${{ github.sha }}"
-          docker build -t $IMAGE_URI .
+          IMAGE_LATEST="${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:latest"
+          docker build -t $IMAGE_URI -t $IMAGE_LATEST .
           docker push $IMAGE_URI
+          docker push $IMAGE_LATEST
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
 
       - name: Deploy to Cloud Run

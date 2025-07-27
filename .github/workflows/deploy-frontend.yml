@@ -47,11 +47,13 @@ jobs:
         run: |
           cd frontend
           IMAGE_URI="${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:${{ github.sha }}"
-          docker build -t $IMAGE_URI \
+          IMAGE_LATEST="${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:latest"
+          docker build -t $IMAGE_URI -t $IMAGE_LATEST \
                        --build-arg NEXT_PUBLIC_API_URL=${{ steps.backend-url.outputs.backend_url }} \
                        --build-arg NEXT_PUBLIC_GCP_PROJECT_ID=${{ env.PROJECT_ID }} \
                        .
           docker push $IMAGE_URI
+          docker push $IMAGE_LATEST
           echo "IMAGE_URI=$IMAGE_URI" >> $GITHUB_ENV
 
 
