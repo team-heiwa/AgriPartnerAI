@@ -16,6 +16,7 @@ resource "google_project_iam_member" "pipeline_roles" {
     "roles/artifactregistry.writer",
     "roles/run.developer",
     "roles/iam.serviceAccountUser",
+    "roles/speech.editor",
   ])
   
   project = var.project_id
@@ -64,4 +65,11 @@ resource "google_project_iam_member" "frontend_roles" {
   project = var.project_id
   role    = each.key
   member  = "serviceAccount:${google_service_account.frontend_sa.email}"
+}
+
+# Grant GCS service account permission to publish to Pub/Sub for Eventarc
+resource "google_project_iam_member" "gcs_pubsub_publisher" {
+  project = var.project_id
+  role    = "roles/pubsub.publisher"
+  member  = "serviceAccount:service-${data.google_project.project.number}@gs-project-accounts.iam.gserviceaccount.com"
 }

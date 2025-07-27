@@ -30,6 +30,7 @@ resource "google_project_service" "required_apis" {
     "cloudbuild.googleapis.com",
     "artifactregistry.googleapis.com",
     "eventarc.googleapis.com",
+    "speech.googleapis.com",
   ])
   
   service = each.key
