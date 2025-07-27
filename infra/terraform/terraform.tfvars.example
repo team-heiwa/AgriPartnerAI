@@ -1,0 +1,7 @@
+project_id = "your-gcp-project-id"
+region     = "us-central1"
+environment = "dev"
+
+# Optional: Override default retention periods
+# input_bucket_retention_days  = 30
+# output_bucket_retention_days = 90
