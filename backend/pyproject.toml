@@ -10,6 +10,9 @@ dependencies = [
     "pydub>=0.25.1",
     "pydantic>=2.5.0",
     "python-dotenv>=1.0.0",
+    "fastapi>=0.104.0",
+    "uvicorn>=0.24.0",
+    "aiohttp>=3.9.0",
 ]
 
 [tool.uv]
