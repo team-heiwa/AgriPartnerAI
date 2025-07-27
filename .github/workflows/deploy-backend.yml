@@ -55,7 +55,6 @@ jobs:
             --region=${{ env.REGION }} \
             --service-account=pipeline-processor-dev@${{ env.PROJECT_ID }}.iam.gserviceaccount.com \
             --memory=1Gi \
-            --cpu=0.5 \
             --min-instances=0 \
             --max-instances=5 \
             --timeout=300 \

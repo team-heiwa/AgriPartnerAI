@@ -64,11 +64,11 @@ resource "google_cloud_run_service" "backend_api" {
         
         resources {
           limits = {
-            cpu    = var.environment == "prod" ? "2" : "1"
+            cpu    = var.environment == "prod" ? "4" : "2"
             memory = var.environment == "prod" ? "2Gi" : "1Gi"
           }
           requests = {
-            cpu    = "0.5"
+            cpu    = "1"
             memory = "512Mi"
           }
         }
@@ -125,11 +125,11 @@ resource "google_cloud_run_service" "frontend" {
         
         resources {
           limits = {
-            cpu    = "1"
+            cpu    = "2"
             memory = "1Gi"
           }
           requests = {
-            cpu    = "0.25"
+            cpu    = "1"
             memory = "256Mi"
           }
         }
