@@ -26,15 +26,6 @@ import GoogleMaps
         }
     }
     
-    // GemmaChannelHandler の登録
-    if #available(iOS 15.0, *) {
-        if let registrar = self.registrar(forPlugin: "GemmaChannelHandler") {
-            print("📌 Registering GemmaChannelHandler")
-            GemmaChannelHandler.register(with: registrar)
-        } else {
-            print("❌ Failed to get registrar for GemmaChannelHandler")
-        }
-    }
     
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }

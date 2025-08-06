@@ -6,6 +6,7 @@ import Flutter
 class GemmaCoreMLHandler: NSObject {
     private var embeddingModel: MLModel?
     private var textProcessor: MLModel?
+    private var lmHandler: Gemma3nLMHandler?
     
     // Model configuration
     private let maxSequenceLength = 128
@@ -15,6 +16,7 @@ class GemmaCoreMLHandler: NSObject {
     // Model names
     private let embeddingModelName = "GemmaEmbedding"
     private let textProcessorName = "GemmaTextProcessor"
+    private let lmModelName = "Gemma3n_LM"
     
     // Performance monitoring
     private var lastInferenceTime: Double = 0
@@ -26,9 +28,28 @@ class GemmaCoreMLHandler: NSObject {
     // MARK: - Model Management
     
     func getModelPath(modelName: String) -> String? {
+        print("🔍 Looking for model: \(modelName)")
+        
+        // Check for mlpackage in bundle first
+        if let modelURL = Bundle.main.url(forResource: modelName, withExtension: "mlpackage") {
+            print("✅ Found mlpackage model: \(modelURL.path)")
+            return modelURL.path
+        }
+        
         // Check for compiled model in app bundle
         if let modelURL = Bundle.main.url(forResource: modelName, withExtension: "mlmodelc") {
+            print("✅ Found compiled model: \(modelURL.path)")
             return modelURL.path
+        }
+        
+        // Debug: List all ML models in bundle
+        if let mlModels = Bundle.main.urls(forResourcesWithExtension: "mlmodelc", subdirectory: nil) {
+            let modelNames = mlModels.map { $0.deletingPathExtension().lastPathComponent }
+            print("📦 ML models in bundle: \(modelNames)")
+        }
+        if let mlPackages = Bundle.main.urls(forResourcesWithExtension: "mlpackage", subdirectory: nil) {
+            let packageNames = mlPackages.map { $0.deletingPathExtension().lastPathComponent }
+            print("📦 ML packages in bundle: \(packageNames)")
         }
         
         // Check for model in documents directory (downloaded models)
@@ -42,7 +63,7 @@ class GemmaCoreMLHandler: NSObject {
         return nil
     }
     
-    func initializeModels(embeddingPath: String?, textProcessorPath: String?, computeUnits: String) -> Bool {
+    func initializeModels(embeddingPath: String?, textProcessorPath: String?, lmPath: String?, computeUnits: String) -> Bool {
         let config = MLModelConfiguration()
         
         // Configure compute units for Neural Engine optimization
@@ -65,7 +86,12 @@ class GemmaCoreMLHandler: NSObject {
         }
         
         // Load embedding model
-        if let path = embeddingPath ?? getModelPath(modelName: embeddingModelName) {
+        var actualEmbeddingPath = embeddingPath
+        if embeddingPath == "bundled" {
+            actualEmbeddingPath = getModelPath(modelName: embeddingModelName)
+        }
+        
+        if let path = actualEmbeddingPath {
             do {
                 let modelURL = URL(fileURLWithPath: path)
                 embeddingModel = try MLModel(contentsOf: modelURL, configuration: config)
@@ -77,7 +103,12 @@ class GemmaCoreMLHandler: NSObject {
         }
         
         // Load text processor model
-        if let path = textProcessorPath ?? getModelPath(modelName: textProcessorName) {
+        var actualTextProcessorPath = textProcessorPath
+        if textProcessorPath == "bundled" {
+            actualTextProcessorPath = getModelPath(modelName: textProcessorName)
+        }
+        
+        if let path = actualTextProcessorPath {
             do {
                 let modelURL = URL(fileURLWithPath: path)
                 textProcessor = try MLModel(contentsOf: modelURL, configuration: config)
@@ -88,10 +119,27 @@ class GemmaCoreMLHandler: NSObject {
             }
         }
         
+        // Load LM model
+        var actualLMPath = lmPath
+        if lmPath == "bundled" {
+            actualLMPath = getModelPath(modelName: lmModelName)
+        }
+        
+        if let path = actualLMPath {
+            do {
+                lmHandler = Gemma3nLMHandler()
+                try lmHandler?.loadModel(at: path)
+                print("✅ LM model loaded from: \(path)")
+            } catch {
+                print("❌ Failed to load LM model: \(error)")
+                // Don't fail completely if LM model fails
+            }
+        }
+        
         // Warm up models with dummy input
         warmUpModels()
         
-        return embeddingModel != nil || textProcessor != nil
+        return embeddingModel != nil || textProcessor != nil || lmHandler != nil
     }
     
     private func warmUpModels() {
@@ -217,6 +265,21 @@ class GemmaCoreMLHandler: NSObject {
     func dispose() {
         embeddingModel = nil
         textProcessor = nil
+        lmHandler = nil
+    }
+    
+    // MARK: - Text Generation
+    
+    func generateText(prompt: String, maxTokens: Int) async throws -> String {
+        guard let handler = lmHandler else {
+            throw NSError(domain: "GemmaCoreML", code: -1, userInfo: [NSLocalizedDescriptionKey: "LM model not loaded"])
+        }
+        
+        let startTime = CFAbsoluteTimeGetCurrent()
+        let generatedText = try await handler.generate(prompt: prompt, maxNewTokens: maxTokens)
+        lastInferenceTime = CFAbsoluteTimeGetCurrent() - startTime
+        
+        return generatedText
     }
 }
 
@@ -227,17 +290,22 @@ class GemmaCoreMLPlugin: NSObject, FlutterPlugin {
     private let handler = GemmaCoreMLHandler()
     
     static func register(with registrar: FlutterPluginRegistrar) {
+        print("🚀 GemmaCoreMLPlugin.register called")
         let channel = FlutterMethodChannel(
             name: "agripartner.ai/gemma_coreml",
             binaryMessenger: registrar.messenger()
         )
         let instance = GemmaCoreMLPlugin()
         registrar.addMethodCallDelegate(instance, channel: channel)
+        print("✅ GemmaCoreMLPlugin registered successfully")
     }
     
     func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        print("📱 GemmaCoreMLPlugin.handle called - method: \(call.method)")
+        
         switch call.method {
         case "initializeModels":
+            print("🔧 Handling initializeModels")
             guard let args = call.arguments as? [String: Any] else {
                 result(FlutterError(code: "INVALID_ARGS", message: "Invalid arguments", details: nil))
                 return
@@ -245,11 +313,19 @@ class GemmaCoreMLPlugin: NSObject, FlutterPlugin {
             
             let embeddingPath = args["embeddingPath"] as? String
             let textProcessorPath = args["textProcessorPath"] as? String
+            let lmPath = args["lmPath"] as? String
             let computeUnits = args["computeUnits"] as? String ?? "all"
+            
+            print("🔍 GemmaCoreMLHandler.initializeModels called")
+            print("📍 embeddingPath: \(embeddingPath ?? "nil")")
+            print("📍 textProcessorPath: \(textProcessorPath ?? "nil")")
+            print("📍 lmPath: \(lmPath ?? "nil")")
+            print("📍 computeUnits: \(computeUnits)")
             
             let success = handler.initializeModels(
                 embeddingPath: embeddingPath,
                 textProcessorPath: textProcessorPath,
+                lmPath: lmPath,
                 computeUnits: computeUnits
             )
             result(success)
@@ -325,6 +401,28 @@ class GemmaCoreMLPlugin: NSObject, FlutterPlugin {
         case "dispose":
             handler.dispose()
             result(nil)
+            
+        case "generateText":
+            guard let args = call.arguments as? [String: Any],
+                  let prompt = args["prompt"] as? String else {
+                result(FlutterError(code: "INVALID_ARGS", message: "Missing prompt", details: nil))
+                return
+            }
+            
+            let maxTokens = args["maxTokens"] as? Int ?? 50
+            
+            Task {
+                do {
+                    let text = try await handler.generateText(prompt: prompt, maxTokens: maxTokens)
+                    result(text)
+                } catch {
+                    result(FlutterError(code: "GENERATION_ERROR", message: error.localizedDescription, details: nil))
+                }
+            }
+            
+        case "getPerformanceStats":
+            let stats = handler.getPerformanceMetrics()
+            result(stats)
             
         default:
             result(FlutterMethodNotImplemented)
