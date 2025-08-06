@@ -128,7 +128,6 @@ lib/widgets/ai/
 # iOS CoreML models and handlers (generated/downloaded)
 ios/Runner/Gemma*.mlpackage/
 ios/Runner/Models/
-ios/Runner/Gemma*.swift
 ios/GemmaMLHandler.swift
 
 # Mobile backend services
