@@ -1,22 +1,26 @@
-# AgriPartner Mobile App
+# AgriPartnerAI Mobile App
 
-A Flutter-based iOS application for AgriPartnerAI, enabling field agents to record visits, manage drone operations, and access agricultural insights on the go.
+**Submission for Google Gemma 3n Impact Challenge**
+
+A Flutter-based iOS application for AgriPartnerAI, enabling generational knowledge transfer in agriculture through on-device AI powered by Google's Gemma 3n model. This app bridges the expertise gap between veteran farmers and the next generation by preserving and sharing agricultural wisdom through an AI partner named "Kei".
 
 ## Features
 
-- **Audio Recording**: Record field visit notes with built-in audio capture
-- **Location Tracking**: GPS-enabled mapping for accurate field documentation
-- **Drone Operations**: Control and monitor agricultural drones
-- **Report Generation**: Access AI-generated insights and recommendations
-- **Offline Support**: Continue working without internet connectivity
-- **Secure Authentication**: JWT-based auth with biometric support
+- **On-Device AI with Gemma 3n**: Leverages MLX Swift for offline inference using Google's Gemma 3n E4B model
+- **Knowledge Transfer System**: Captures and preserves farming expertise through observation cards
+- **AI Agriculture Partner "Kei"**: Interactive AI assistant trained on veteran farmer knowledge
+- **Multi-Modal Learning**: Combines text, voice, and visual inputs for comprehensive knowledge capture
+- **Offline-First Architecture**: Full functionality without internet connectivity using on-device models
+- **Privacy-Focused**: All inference happens on-device, ensuring farmer data privacy
 
 ## Prerequisites
 
 - Flutter 3.19.0 or higher
 - Xcode 14.0 or higher
-- iOS 12.0 or higher
+- iOS 17.0 or higher (for MLX support)
 - CocoaPods 1.12.0 or higher
+- Device with 6GB+ RAM for on-device inference
+- macOS 14.0+ for development
 
 ## Setup
 
@@ -143,9 +147,23 @@ The app requires the following iOS permissions:
 | API_BASE_URL | Backend API endpoint | https://api.agripartner.ai |
 | ENVIRONMENT | App environment | development |
 
-## Deployment
+## Demo Deployment
 
-### TestFlight
+### Web Version (For Hackathon Judges)
+
+A web version is available for UI/UX demonstration purposes:
+
+```bash
+# Build web version
+flutter build web --release
+
+# Deploy to Firebase Hosting
+firebase deploy --only hosting
+```
+
+**Note**: The web version demonstrates the UI/UX flow but does not include on-device MLX inference capabilities, which are iOS-specific.
+
+### TestFlight (Full iOS Experience)
 
 1. Update version in `pubspec.yaml`
 2. Build release version
@@ -188,6 +206,65 @@ open -a Simulator
 3. Add tests for new features
 4. Submit PR with clear description
 
+## On-Device Model Setup
+
+### Installing Gemma 3n Model
+
+1. **Download the model from Hugging Face**:
+   ```bash
+   # Install Hugging Face CLI
+   pip install huggingface-hub
+   
+   # Download Gemma 3n E4B model
+   huggingface-cli download google/gemma-3n-e4b-it-4bit \
+     --local-dir ./models/gemma-3n-e4b
+   ```
+
+2. **Add MLX Swift Package to Xcode**:
+   - Open `ios/Runner.xcworkspace` in Xcode
+   - Add package dependency: `https://github.com/ml-explore/mlx-swift`
+   - Add package dependency: `https://github.com/ml-explore/mlx-swift-examples`
+
+3. **Place model files**:
+   ```bash
+   cp -r ./models/gemma-3n-e4b/* ios/Runner/Models/
+   ```
+
+## Model Attribution
+
+This application uses Google's Gemma 3n model, specifically the E4B-it-4bit variant optimized for on-device inference. Gemma models are open-weight models released by Google under the Gemma Terms of Use.
+
+- **Model**: Gemma 3n E4B-it-4bit
+- **Source**: [Hugging Face](https://huggingface.co/google/gemma-3n-e4b-it-4bit)
+- **License**: [Gemma Terms of Use](https://ai.google.dev/gemma/terms)
+- **Framework**: MLX Swift for on-device inference
+
+## Competition Context
+
+This project is submitted to the **Google Gemma 3n Impact Challenge** on Kaggle, demonstrating innovative use of Gemma models for social impact in agriculture. The application addresses the critical challenge of preserving and transferring agricultural knowledge between generations, particularly important as the global farming population ages.
+
+### Impact Goals
+- Preserve traditional farming knowledge before it's lost
+- Bridge the technology gap in agriculture
+- Enable sustainable farming practices through AI-assisted learning
+- Support rural communities with offline-capable technology
+
 ## License
 
+### Application Code
 Copyright © 2025 AgriPartnerAI. All rights reserved.
+
+The application source code is proprietary. For licensing inquiries, please contact the development team.
+
+### Model License
+The Gemma 3n model is used under the [Gemma Terms of Use](https://ai.google.dev/gemma/terms). Users must comply with these terms when using the application.
+
+### Third-Party Libraries
+This project uses various open-source libraries. See `pubspec.yaml` and `Package.swift` for detailed dependency information and their respective licenses.
+
+## Acknowledgments
+
+- Google DeepMind for developing and releasing the Gemma model family
+- Apple ML Explore team for the MLX framework
+- The Flutter and Swift communities for their excellent tools and libraries
+- Kaggle for hosting the Google Gemma 3n Impact Challenge

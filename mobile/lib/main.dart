@@ -11,11 +11,7 @@ import 'screens/drone_ops/drone_ops_screen.dart';
 import 'screens/library/library_screen.dart';
 import 'screens/map/map_screen.dart';
 import 'screens/settings/settings_screen.dart';
-import 'screens/voice_test/voice_test_screen.dart';
-import 'screens/gemma_test/gemma_test_screen.dart';
-import 'screens/gemma_mediapipe_test/gemma_mediapipe_test_screen.dart';
 import 'screens/ai_models/ai_models_screen.dart';
-import 'screens/coreml_test/coreml_test_screen.dart';
 import 'screens/ai_advisor/ai_advisor_screen.dart';
 
 void main() async {
@@ -79,24 +75,8 @@ final _router = GoRouter(
       builder: (context, state) => const SettingsScreen(),
     ),
     GoRoute(
-      path: '/voice-test',
-      builder: (context, state) => const VoiceTestScreen(),
-    ),
-    GoRoute(
-      path: '/gemma-test',
-      builder: (context, state) => const GemmaTestScreen(),
-    ),
-    GoRoute(
-      path: '/gemma-mediapipe-test',
-      builder: (context, state) => const GemmaMediaPipeTestScreen(),
-    ),
-    GoRoute(
       path: '/ai-models',
       builder: (context, state) => const AIModelsScreen(),
-    ),
-    GoRoute(
-      path: '/coreml-test',
-      builder: (context, state) => const CoreMLTestScreen(),
     ),
     GoRoute(
       path: '/ai-advisor',
