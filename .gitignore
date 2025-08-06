@@ -48,3 +48,38 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# AI/ML Models and Data (large binary files)
+*.bin
+*.safetensors
+*.mlpackage/Data/com.apple.CoreML/weights/
+weights/
+checkpoints/
+
+# Virtual environments
+mlx_coreml_env/
+.mlx/
+
+# Removed directories (no longer in project)
+frontend/
+backend/
+infra/
+infrastructure/
+
+# Development/conversion tools (not needed for app runtime)
+mobile/coreml_experiment/
+mobile/coreml_models/
+mobile/model_conversion/
+mobile/mlx_to_coreml/
+mobile/python_server/
+
+# Keep documentation files
+!*.md
+
+# Keep shell scripts for setup
+!*.sh
+
+# Temporary and cache directories
+cache/
+tmp/
+temp/
