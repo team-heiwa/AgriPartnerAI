@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class LibraryScreen extends StatefulWidget {
@@ -11,52 +12,74 @@ class LibraryScreen extends StatefulWidget {
 class _LibraryScreenState extends State<LibraryScreen> {
   String _selectedView = 'list';
   String _selectedFilter = 'all';
+  String _sortOrder = 'newest'; // newest or oldest
   final TextEditingController _searchController = TextEditingController();
 
   final List<ResourceCard> _resources = [
+    // Demo observation cards from the workflow
     ResourceCard(
       id: '1',
-      title: 'Pest Management Guide',
-      description: 'Comprehensive guide for identifying and managing common agricultural pests',
-      category: 'pest',
-      date: DateTime.now().subtract(const Duration(days: 5)),
-      imageUrl: 'assets/images/pest_guide.jpg',
+      title: 'Identifying Variegated Leaves - Veteran Knowledge',
+      description: 'Record learned from veteran farmers that pale leaf color is not a disease but wind sunburn',
+      category: 'observation',
+      date: DateTime.now().subtract(const Duration(days: 1)),
+      imageUrl: 'assets/images/leaf_observation.jpg',
       location: const LatLng(35.6762, 139.6503),
+      source: 'Veteran Farmer - Mr. Tanaka',
+      confidence: 0.95,
+      tags: ['Variegation', 'Sunburn', 'Wind Damage'],
     ),
     ResourceCard(
       id: '2',
-      title: 'Irrigation Best Practices',
-      description: 'Efficient water management techniques for sustainable farming',
-      category: 'irrigation',
-      date: DateTime.now().subtract(const Duration(days: 10)),
-      imageUrl: 'assets/images/irrigation.jpg',
-      location: const LatLng(35.6812, 139.7671),
+      title: 'Manual Soil Moisture Check Method',
+      description: 'Record of traditional method checking soil moisture by squeezing with hand',
+      category: 'observation',
+      date: DateTime.now().subtract(const Duration(days: 1)),
+      imageUrl: 'assets/images/soil_check.jpg',
+      location: const LatLng(35.6762, 139.6503),
+      source: 'Veteran Farmer - Mr. Tanaka',
+      confidence: 0.98,
+      tags: ['Soil', 'Moisture', 'Manual Check'],
     ),
     ResourceCard(
       id: '3',
-      title: 'Soil Health Assessment',
-      description: 'Methods for evaluating and improving soil quality',
-      category: 'soil',
-      date: DateTime.now().subtract(const Duration(days: 15)),
-      imageUrl: 'assets/images/soil.jpg',
-      location: const LatLng(35.6585, 139.7454),
+      title: 'Practice on My Farm - Rediscovering Variegated Leaves',
+      description: 'AI advisor confirmed similar variegation pattern by matching with previous records',
+      category: 'ai_analysis',
+      date: DateTime.now().subtract(const Duration(minutes: 30)),
+      imageUrl: 'assets/images/my_field_observation.jpg',
+      location: const LatLng(35.6785, 139.6520),
+      source: 'AI Advisor - My Farm',
+      confidence: 0.92,
+      tags: ['Variegation', 'Similar Case', 'AI Analysis'],
     ),
     ResourceCard(
       id: '4',
-      title: 'Crop Disease Identification',
-      description: 'Visual guide to common crop diseases and treatment options',
-      category: 'disease',
+      title: 'Crop Disease Identification Guide',
+      description: 'Visual guide for identifying common crop diseases and pests',
+      category: 'reference',
       date: DateTime.now().subtract(const Duration(days: 20)),
-      imageUrl: 'assets/images/disease.jpg',
+      imageUrl: 'assets/images/disease_guide.jpg',
       location: const LatLng(35.6895, 139.6917),
+      source: 'Agricultural Technology Center',
+      confidence: 1.0,
+      tags: ['Disease', 'Pest', 'Guide'],
     ),
   ];
 
   List<ResourceCard> get _filteredResources {
     var filtered = _resources;
     
+    // Apply category filter (veteran/myfarm/all)
     if (_selectedFilter != 'all') {
-      filtered = filtered.where((r) => r.category == _selectedFilter).toList();
+      filtered = filtered.where((r) {
+        if (_selectedFilter == 'veteran') {
+          return r.source?.contains('Veteran') ?? false;
+        } else if (_selectedFilter == 'myfarm') {
+          return (r.source?.contains('My Farm') ?? false) || (r.source?.contains('AI') ?? false);
+        }
+        return true;
+      }).toList();
     }
     
     if (_searchController.text.isNotEmpty) {
@@ -66,6 +89,15 @@ class _LibraryScreenState extends State<LibraryScreen> {
       ).toList();
     }
     
+    // Apply sorting
+    filtered.sort((a, b) {
+      if (_sortOrder == 'newest') {
+        return b.date.compareTo(a.date);
+      } else {
+        return a.date.compareTo(b.date);
+      }
+    });
+    
     return filtered;
   }
 
@@ -74,6 +106,16 @@ class _LibraryScreenState extends State<LibraryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Library'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            if (Navigator.of(context).canPop()) {
+              Navigator.of(context).pop();
+            } else {
+              context.go('/home');
+            }
+          },
+        ),
         actions: [
           IconButton(
             icon: Icon(_selectedView == 'list' ? Icons.map : Icons.list),
@@ -91,6 +133,47 @@ class _LibraryScreenState extends State<LibraryScreen> {
       ),
       body: Column(
         children: [
+          // Demo Flow Success Banner
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            color: Colors.green[50],
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.green[600], size: 24),
+                    const SizedBox(width: 8),
+                    const Text(
+                      'Knowledge Accumulation Complete!',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Observation records have been generated from veteran farmer knowledge and AI analysis',
+                  style: TextStyle(fontSize: 14),
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      context.push('/ai-advisor');
+                    },
+                    icon: const Icon(Icons.psychology),
+                    label: const Text('Consult AI Partner Kei'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.purple,
+                      foregroundColor: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          
           // Search and Filter Bar
           Container(
             padding: const EdgeInsets.all(16),
@@ -111,17 +194,47 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   onChanged: (value) => setState(() {}),
                 ),
                 const SizedBox(height: 12),
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      _buildFilterChip('All', 'all'),
-                      _buildFilterChip('Pest', 'pest'),
-                      _buildFilterChip('Disease', 'disease'),
-                      _buildFilterChip('Soil', 'soil'),
-                      _buildFilterChip('Irrigation', 'irrigation'),
-                    ],
-                  ),
+                Row(
+                  children: [
+                    // Source filter
+                    Expanded(
+                      child: SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            _buildFilterChip('All', 'all'),
+                            _buildFilterChip('Veteran', 'veteran'),
+                            _buildFilterChip('My Farm', 'myfarm'),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    // Sort order dropdown
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.grey[300]!),
+                      ),
+                      child: DropdownButton<String>(
+                        value: _sortOrder,
+                        isDense: true,
+                        underline: const SizedBox(),
+                        icon: const Icon(Icons.arrow_drop_down, size: 20),
+                        items: const [
+                          DropdownMenuItem(value: 'newest', child: Text('Newest First', style: TextStyle(fontSize: 14))),
+                          DropdownMenuItem(value: 'oldest', child: Text('Oldest First', style: TextStyle(fontSize: 14))),
+                        ],
+                        onChanged: (value) {
+                          setState(() {
+                            _sortOrder = value!;
+                          });
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -261,6 +374,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   IconData _getCategoryIcon(String category) {
     switch (category) {
+      case 'observation':
+        return Icons.visibility;
+      case 'ai_analysis':
+        return Icons.psychology;
+      case 'reference':
+        return Icons.library_books;
       case 'pest':
         return Icons.bug_report;
       case 'disease':
@@ -276,6 +395,12 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   Color _getCategoryColor(String category) {
     switch (category) {
+      case 'observation':
+        return Colors.green[100]!;
+      case 'ai_analysis':
+        return Colors.purple[100]!;
+      case 'reference':
+        return Colors.blue[100]!;
       case 'pest':
         return Colors.orange[100]!;
       case 'disease':
@@ -283,7 +408,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
       case 'soil':
         return Colors.brown[100]!;
       case 'irrigation':
-        return Colors.blue[100]!;
+        return Colors.cyan[100]!;
       default:
         return Colors.grey[100]!;
     }
@@ -387,6 +512,9 @@ class ResourceCard {
   final DateTime date;
   final String imageUrl;
   final LatLng location;
+  final String? source;
+  final double? confidence;
+  final List<String>? tags;
 
   ResourceCard({
     required this.id,
@@ -396,6 +524,9 @@ class ResourceCard {
     required this.date,
     required this.imageUrl,
     required this.location,
+    this.source,
+    this.confidence,
+    this.tags,
   });
 }
 

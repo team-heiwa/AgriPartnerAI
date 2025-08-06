@@ -34,9 +34,21 @@ dependencies:
   google_maps_flutter: ^2.5.3
   geolocator: ^10.1.0
   
+  # Audio & Speech
+  flutter_sound: ^9.2.13
+  speech_to_text: ^6.5.0
+  
   # Utilities
   intl: ^0.18.1
   uuid: ^4.2.2
+  http: ^1.1.0
+  image_picker: ^1.0.7
+  
+  # MediaPipe for on-device AI
+  flutter_mediapipe_chat: ^1.0.0
+  
+  # Cryptography
+  crypto: ^3.0.3
 
 dev_dependencies:
   flutter_test:
@@ -49,3 +61,4 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/models/

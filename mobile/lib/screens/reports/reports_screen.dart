@@ -51,7 +51,7 @@ class _ReportsScreenState extends State<ReportsScreen> with SingleTickerProvider
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -68,6 +68,7 @@ class _ReportsScreenState extends State<ReportsScreen> with SingleTickerProvider
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
+            Tab(text: 'Impact'),
             Tab(text: 'Generate'),
             Tab(text: 'History'),
             Tab(text: 'Templates'),
@@ -77,6 +78,7 @@ class _ReportsScreenState extends State<ReportsScreen> with SingleTickerProvider
       body: TabBarView(
         controller: _tabController,
         children: [
+          _buildImpactTab(),
           _buildGenerateTab(),
           _buildHistoryTab(),
           _buildTemplatesTab(),
@@ -552,7 +554,460 @@ class _ReportsScreenState extends State<ReportsScreen> with SingleTickerProvider
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Using template: $templateName')),
     );
-    _tabController.animateTo(0);
+    _tabController.animateTo(1); // Navigate to Generate tab
+  }
+  
+  Widget _buildImpactTab() {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Demo Completion Banner
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.purple[400]!, Colors.blue[400]!],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Column(
+              children: [
+                const Icon(
+                  Icons.celebration,
+                  color: Colors.white,
+                  size: 32,
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Demo Flow Complete!',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                const Text(
+                  'Agricultural knowledge transfer achieved',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 24),
+          
+          // Header
+          const Text(
+            'Agri Partner AI Impact',
+            style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Results from combining veteran farmer knowledge with AI technology',
+            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+          ),
+          const SizedBox(height: 24),
+          
+          // Key Metrics Cards
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 2,
+            crossAxisSpacing: 16,
+            mainAxisSpacing: 16,
+            childAspectRatio: 1.1,
+            children: [
+              _buildMetricCard(
+                title: 'Pesticide Reduction',
+                value: '30%',
+                subtitle: 'Avoided unnecessary spraying through proper diagnosis',
+                icon: Icons.eco,
+                color: Colors.green,
+                trend: '+15% from last month',
+              ),
+              _buildMetricCard(
+                title: 'Time Saved',
+                value: '3 min',
+                subtitle: 'Real-time diagnosis from remote locations',
+                icon: Icons.access_time,
+                color: Colors.blue,
+                trend: 'Real-time analysis',
+              ),
+              _buildMetricCard(
+                title: 'Diagnostic Accuracy',
+                value: '92%',
+                subtitle: 'Fusion of veteran farmer knowledge and AI',
+                icon: Icons.psychology,
+                color: Colors.purple,
+                trend: 'Similar case matching',
+              ),
+              _buildMetricCard(
+                title: 'Knowledge Transfer',
+                value: '100+',
+                subtitle: 'Recorded agricultural knowledge',
+                icon: Icons.school,
+                color: Colors.orange,
+                trend: 'Growing library',
+              ),
+            ],
+          ),
+          const SizedBox(height: 32),
+          
+          // Impact Chart Section
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Monthly Impact Trend',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildImpactChart(),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          
+          // Before/After Comparison
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Before and After Comparison',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildBeforeAfterComparison(),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: 24),
+          
+          // Success Stories
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Success Stories',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
+                  _buildSuccessStory(),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildMetricCard({
+    required String title,
+    required String value,
+    required String subtitle,
+    required IconData icon,
+    required Color color,
+    required String trend,
+  }) {
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(icon, color: color, size: 24),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    title,
+                    style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 12),
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: color,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              subtitle,
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.grey[600],
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: color.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                trend,
+                style: TextStyle(
+                  fontSize: 9,
+                  color: color,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildImpactChart() {
+    return Container(
+      height: 200,
+      child: Column(
+        children: [
+          // Simple bar chart representation
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              _buildChartBar('Jan', 0.3, Colors.red[300]!),
+              _buildChartBar('Feb', 0.5, Colors.orange[300]!),
+              _buildChartBar('Mar', 0.7, Colors.yellow[600]!),
+              _buildChartBar('Apr', 0.9, Colors.green[400]!),
+              _buildChartBar('May', 1.0, Colors.green[600]!),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildLegendItem('Pesticide Reduction', Colors.green),
+              const SizedBox(width: 20),
+              _buildLegendItem('Diagnostic Accuracy', Colors.blue),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildChartBar(String label, double height, Color color) {
+    return Column(
+      children: [
+        Container(
+          width: 30,
+          height: height * 120,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12),
+        ),
+      ],
+    );
+  }
+  
+  Widget _buildLegendItem(String label, Color color) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(
+          width: 12,
+          height: 12,
+          decoration: BoxDecoration(
+            color: color,
+            shape: BoxShape.circle,
+          ),
+        ),
+        const SizedBox(width: 4),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 12),
+        ),
+      ],
+    );
+  }
+  
+  Widget _buildBeforeAfterComparison() {
+    return Row(
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Before',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.red[600],
+                ),
+              ),
+              const SizedBox(height: 12),
+              _buildComparisonItem('Diagnosis Time', '30 min', Icons.access_time),
+              _buildComparisonItem('Pesticide Use', '4 times/month', Icons.science),
+              _buildComparisonItem('Travel Time', '2 hours round trip', Icons.directions_car),
+              _buildComparisonItem('Accuracy', 'Experience-dependent', Icons.help),
+            ],
+          ),
+        ),
+        const SizedBox(width: 20),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'After',
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.green[600],
+                ),
+              ),
+              const SizedBox(height: 12),
+              _buildComparisonItem('Diagnosis Time', '3 min', Icons.access_time),
+              _buildComparisonItem('Pesticide Use', '3 times/month (25% reduction)', Icons.eco),
+              _buildComparisonItem('Travel Time', '0 min (remote)', Icons.smartphone),
+              _buildComparisonItem('Accuracy', '92% (AI-assisted)', Icons.psychology),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+  
+  Widget _buildComparisonItem(String label, String value, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: Colors.grey[600]),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                ),
+                Text(
+                  value,
+                  style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildSuccessStory() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.green[50],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: Colors.green[200]!),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: Colors.green[100],
+                child: const Icon(Icons.person, color: Colors.green),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Tanaka Farm (Tomato Cultivation)',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      '3 Months Since Implementation',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          const Text(
+            '"By having AI learn from veteran farmer knowledge, even inexperienced employees can now make accurate diagnoses. Especially with variegated leaf identification, we used to mistake it for disease and spray unnecessary pesticides, but now we can make proper judgments."',
+            style: TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              _buildSuccessMetric('Pesticide Reduction', '30%'),
+              const SizedBox(width: 16),
+              _buildSuccessMetric('Time Saved', '80%'),
+              const SizedBox(width: 16),
+              _buildSuccessMetric('Accuracy Improvement', '92%'),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+  
+  Widget _buildSuccessMetric(String label, String value) {
+    return Column(
+      children: [
+        Text(
+          value,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.green,
+          ),
+        ),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 11),
+        ),
+      ],
+    );
   }
 }
 

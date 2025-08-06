@@ -12,6 +12,30 @@ import GoogleMaps
     GMSServices.provideAPIKey("AIzaSyBwEFUaNVc-HufJghr12pMTrENd67gpwtA")
     
     GeneratedPluginRegistrant.register(with: self)
+    
+    // デバッグログを追加
+    print("🎯 AppDelegate: Registering custom plugins...")
+    
+    // GemmaCoreMLPlugin の登録
+    if #available(iOS 16.0, *) {
+        if let registrar = self.registrar(forPlugin: "GemmaCoreMLPlugin") {
+            print("📌 Registering GemmaCoreMLPlugin")
+            GemmaCoreMLPlugin.register(with: registrar)
+        } else {
+            print("❌ Failed to get registrar for GemmaCoreMLPlugin")
+        }
+    }
+    
+    // GemmaChannelHandler の登録
+    if #available(iOS 15.0, *) {
+        if let registrar = self.registrar(forPlugin: "GemmaChannelHandler") {
+            print("📌 Registering GemmaChannelHandler")
+            GemmaChannelHandler.register(with: registrar)
+        } else {
+            print("❌ Failed to get registrar for GemmaChannelHandler")
+        }
+    }
+    
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 }

@@ -39,7 +39,7 @@ class _DroneOpsScreenState extends State<DroneOpsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Drone Operations'),
+        title: const Text('Drone Ops'),
         actions: [
           IconButton(
             icon: Icon(_isManualControl ? Icons.gamepad : Icons.route),

@@ -373,7 +373,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             onPressed: () {
               Navigator.pop(context);
               // Perform sign out
-              context.go('/dashboard');
+              context.go('/home');
             },
             child: const Text('Sign Out'),
           ),

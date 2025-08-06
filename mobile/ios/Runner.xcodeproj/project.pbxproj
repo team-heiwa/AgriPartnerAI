@@ -10,6 +10,11 @@
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		331C808B294A63AB00263BE5 /* RunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 331C807B294A618700263BE5 /* RunnerTests.swift */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
+		6580EDF42E413C530066A642 /* GemmaEmbedding.mlpackage in Resources */ = {isa = PBXBuildFile; fileRef = 6580EDED2E4135440066A642 /* GemmaEmbedding.mlpackage */; };
+		6580EDF52E413C530066A642 /* GemmaSmall_Embedding.mlpackage in Resources */ = {isa = PBXBuildFile; fileRef = 6580EDEE2E4135440066A642 /* GemmaSmall_Embedding.mlpackage */; };
+		6580EDF62E413C530066A642 /* GemmaTextProcessor.mlpackage in Resources */ = {isa = PBXBuildFile; fileRef = 6580EDEF2E4135440066A642 /* GemmaTextProcessor.mlpackage */; };
+		6580EDF92E4184B80066A642 /* GemmaCoreMLHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6580EDF72E4184B80066A642 /* GemmaCoreMLHandler.swift */; };
+		6580EDFA2E4184B80066A642 /* GemmaMLHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6580EDF82E4184B80066A642 /* GemmaMLHandler.swift */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		78129A184ACD3C9FD8761033 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C6FEBF2B453D6F7E1138E60 /* Pods_RunnerTests.framework */; };
 		9794B3E0FD0DA363320DC76D /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C1220D0550402159EA09E91 /* Pods_Runner.framework */; };
@@ -51,6 +56,11 @@
 		3D97BEE406C8A3FB1E139EAA /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		4A4BAB7FB5E780BC7CC1CE7C /* Pods-Runner.profile.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.profile.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.profile.xcconfig"; sourceTree = "<group>"; };
 		4C6FEBF2B453D6F7E1138E60 /* Pods_RunnerTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_RunnerTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		6580EDED2E4135440066A642 /* GemmaEmbedding.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = GemmaEmbedding.mlpackage; sourceTree = "<group>"; };
+		6580EDEE2E4135440066A642 /* GemmaSmall_Embedding.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = GemmaSmall_Embedding.mlpackage; sourceTree = "<group>"; };
+		6580EDEF2E4135440066A642 /* GemmaTextProcessor.mlpackage */ = {isa = PBXFileReference; lastKnownFileType = folder.mlpackage; path = GemmaTextProcessor.mlpackage; sourceTree = "<group>"; };
+		6580EDF72E4184B80066A642 /* GemmaCoreMLHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GemmaCoreMLHandler.swift; sourceTree = "<group>"; };
+		6580EDF82E4184B80066A642 /* GemmaMLHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GemmaMLHandler.swift; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
@@ -105,7 +115,6 @@
 				AAA336B896C73BA66BD554EA /* Pods-RunnerTests.release.xcconfig */,
 				8E0B0F0F5D850232F6E870F6 /* Pods-RunnerTests.profile.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -144,6 +153,11 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				6580EDF72E4184B80066A642 /* GemmaCoreMLHandler.swift */,
+				6580EDF82E4184B80066A642 /* GemmaMLHandler.swift */,
+				6580EDED2E4135440066A642 /* GemmaEmbedding.mlpackage */,
+				6580EDEE2E4135440066A642 /* GemmaSmall_Embedding.mlpackage */,
+				6580EDEF2E4135440066A642 /* GemmaTextProcessor.mlpackage */,
 				97C146FA1CF9000F007C117D /* Main.storyboard */,
 				97C146FD1CF9000F007C117D /* Assets.xcassets */,
 				97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */,
@@ -261,6 +275,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6580EDF42E413C530066A642 /* GemmaEmbedding.mlpackage in Resources */,
+				6580EDF52E413C530066A642 /* GemmaSmall_Embedding.mlpackage in Resources */,
+				6580EDF62E413C530066A642 /* GemmaTextProcessor.mlpackage in Resources */,
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
@@ -356,7 +373,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build";
+			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build\n";
 		};
 		CEFDDA5A6098C057B3FBFC30 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -396,6 +413,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
+				6580EDF92E4184B80066A642 /* GemmaCoreMLHandler.swift in Sources */,
+				6580EDFA2E4184B80066A642 /* GemmaMLHandler.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -492,6 +511,7 @@
 				DEVELOPMENT_TEAM = V6VGGTV37N;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -675,6 +695,7 @@
 				DEVELOPMENT_TEAM = V6VGGTV37N;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -698,6 +719,7 @@
 				DEVELOPMENT_TEAM = V6VGGTV37N;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Runner/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
