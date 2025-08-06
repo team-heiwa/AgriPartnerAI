@@ -1,0 +1,148 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# VS Code related
+.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+pubspec.lock
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# API Keys
+**/ios/Runner/GoogleMapsAPIKey.plist
+
+# iOS/Xcode related
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.moved-aside
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/ios/**/*sync/
+**/ios/**/.sconsign.dblite
+**/ios/**/.tags*
+**/ios/**/.vagrant/
+**/ios/**/DerivedData/
+**/ios/**/Icon?
+**/ios/**/Pods/
+**/ios/**/.symlinks/
+**/ios/**/profile
+**/ios/**/xcuserdata
+**/ios/.generated/
+**/ios/Flutter/App.framework
+**/ios/Flutter/Flutter.framework
+**/ios/Flutter/Flutter.podspec
+**/ios/Flutter/Generated.xcconfig
+**/ios/Flutter/ephemeral/
+**/ios/Flutter/app.flx
+**/ios/Flutter/app.zip
+**/ios/Flutter/flutter_assets/
+**/ios/Flutter/flutter_export_environment.sh
+**/ios/ServiceDefinitions.json
+**/ios/Runner/GeneratedPluginRegistrant.*
+**/ios/Podfile.lock
+**/ios/Pods/Manifest.lock
+**/ios/**/*.xcworkspace/xcuserdata/
+**/ios/**/*.xcuserstate
+
+# macOS
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+
+# Coverage
+coverage/
+
+# Environment variables
+.env
+.env.*
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# OS generated files
+Thumbs.db
+.Spotlight-V100
+.Trashes
+
+# Exceptions to above rules.
+!**/ios/**/default.mode1v3
+!**/ios/**/default.mode2v3
+!**/ios/**/default.pbxuser
+!**/ios/**/default.perspectivev3
+
+# Mobile-specific AI/ML Models and Services
+lib/config/api_config.dart
+lib/services/ai_model_manager.dart
+lib/services/feature_manager.dart
+lib/services/gemma_*.dart
+lib/services/mlx_*.dart
+lib/services/speech_to_text_service.dart
+
+# Mobile AI/ML Model screens and tests
+lib/screens/ai_advisor/
+lib/screens/ai_models/
+lib/screens/chat/
+lib/screens/coreml_test/
+lib/screens/gemma_*/
+lib/screens/voice_test/
+lib/screens/home/
+lib/screens/observation_card/
+
+# Mobile AI widgets
+lib/widgets/ai/
+
+# iOS CoreML models and handlers (generated/downloaded)
+ios/Runner/Gemma*.mlpackage/
+ios/Runner/Models/
+ios/GemmaMLHandler.swift
+
+# Mobile backend services
+backend/
+infrastructure/
+python_server/
+
+# Model conversion and experiments
+coreml_experiment/
+coreml_models/
+mlx_to_coreml/
+model_conversion/
+models/
+
+# Mobile documentation (auto-generated)
+*.md
+!README.md
+!pubspec.yaml

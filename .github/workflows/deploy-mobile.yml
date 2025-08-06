@@ -1,0 +1,87 @@
+name: Deploy Mobile App
+
+on:
+  push:
+    branches: [main]
+    paths: 
+      - 'mobile/**'
+      - '.github/workflows/deploy-mobile.yml'
+  pull_request:
+    branches: [main]
+    paths: 
+      - 'mobile/**'
+      - '.github/workflows/deploy-mobile.yml'
+
+jobs:
+  test:
+    name: Test Flutter App
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          channel: 'stable'
+      
+      - name: Get dependencies
+        run: |
+          cd mobile
+          flutter pub get
+      
+      - name: Run tests
+        run: |
+          cd mobile
+          flutter test
+      
+      - name: Check formatting
+        run: |
+          cd mobile
+          flutter format --set-exit-if-changed .
+      
+      - name: Analyze code
+        run: |
+          cd mobile
+          flutter analyze
+
+  build-ios:
+    name: Build iOS App
+    needs: test
+    runs-on: macos-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.0'
+          channel: 'stable'
+      
+      - name: Get dependencies
+        run: |
+          cd mobile
+          flutter pub get
+      
+      - name: Build iOS (no code signing for now)
+        run: |
+          cd mobile
+          flutter build ios --release --no-codesign
+      
+      # TODO: Add code signing and App Store deployment steps
+      # - name: Setup code signing
+      #   uses: apple-actions/import-codesign-certs@v2
+      #   with:
+      #     p12-file-base64: ${{ secrets.IOS_CERTIFICATES_P12 }}
+      #     p12-password: ${{ secrets.IOS_CERTIFICATES_PASSWORD }}
+      
+      # - name: Deploy to TestFlight
+      #   uses: apple-actions/upload-testflight-build@v1
+      #   with:
+      #     app-path: mobile/build/ios/iphoneos/Runner.app
+      #     issuer-id: ${{ secrets.APPSTORE_ISSUER_ID }}
+      #     api-key-id: ${{ secrets.APPSTORE_API_KEY_ID }}
+      #     api-private-key: ${{ secrets.APPSTORE_API_PRIVATE_KEY }}

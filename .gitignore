@@ -10,7 +10,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -48,3 +47,45 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# AI/ML Models and Data
+*.mlpackage/
+*.bin
+*.model
+models/
+weights/
+checkpoints/
+
+# Extended Virtual environments
+mlx_coreml_env/
+.mlx/
+
+# Build and deployment artifacts
+infrastructure/
+backend/model_download_service*
+python_server/
+coreml_experiment/
+coreml_models/
+model_conversion/
+
+# Auto-generated documentation (comment out specific files you want to track)
+AI_MODEL_SYSTEM.md
+CORE_ML_SETUP_GUIDE.md
+GEMMA_SETUP.md
+IOS_COREML_INTEGRATION.md
+MEDIAPIPE_SETUP.md
+ADD_SWIFT_FILES_STEPS.md
+ADD_SWIFT_FILES_TO_XCODE.md
+XCODE_CLEANUP_INSTRUCTIONS.md
+CONVERSION_SUMMARY.md
+
+# Build scripts and test files
+*.sh
+test_*.py
+test_models.sh
+add_coreml_models.sh
+
+# Temporary and cache directories
+cache/
+tmp/
+temp/
