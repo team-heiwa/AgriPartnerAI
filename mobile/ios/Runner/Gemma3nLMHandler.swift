@@ -139,65 +139,11 @@ class Gemma3nLMHandler {
         print("🎯 Generated text: '\(generatedText)'")
         print("📊 Token statistics: input=\(inputTokens.count), generated=\(generatedTokens.count), unique=\(Set(generatedTokens).count)")
         
-        // If we have meaningful generated text, return it
-        if !generatedText.isEmpty && generatedText != "[?]" {
-            return generatedText
-        }
-        
-        // Otherwise, provide a context-aware response based on the input
-        return generateFallbackResponse(for: prompt, generatedTokens: generatedTokens)
+        // Return only the generated text, no fallbacks
+        return generatedText
     }
     
-    private func generateContextAwareResponse(for prompt: String) -> String {
-        print("🔍 Analyzing prompt: \(prompt)")
-        let lowercasePrompt = prompt.lowercased()
-        
-        // Japanese responses
-        if prompt.contains("葉") || prompt.contains("黄色") {
-            print("✅ Matched Japanese leaf/yellow pattern")
-            return "葉の黄変は、栄養不足（特に窒素）、水分ストレス、または病害の可能性があります。土壌のpHと栄養状態を確認し、適切な施肥と水管理を行ってください。"
-        }
-        
-        if prompt.contains("病気") || prompt.contains("病害") {
-            print("✅ Matched Japanese disease pattern")
-            return "作物の病害対策には、予防が重要です。適切な株間を保ち、風通しを良くし、朝の水やりを心がけてください。症状が見られたら、早期に適切な農薬を使用しましょう。"
-        }
-        
-        if prompt.contains("水") || prompt.contains("灌水") {
-            print("✅ Matched Japanese water pattern")
-            return "灌水は土壌の状態を見て行います。表土が乾いたら、朝夕の涼しい時間帯に根元にたっぷりと水を与えてください。過度の水やりは根腐れの原因となります。"
-        }
-        
-        // English responses
-        if lowercasePrompt.contains("hello") || lowercasePrompt.contains("hi") || lowercasePrompt.contains("はろー") {
-            print("✅ Matched greeting pattern")
-            return "Hello! I'm Kei, your AI farming assistant. I can help you with crop management, pest identification, irrigation advice, and general agricultural questions. What would you like to know?"
-        }
-        
-        if lowercasePrompt.contains("leaf") || lowercasePrompt.contains("yellow") {
-            print("✅ Matched English leaf/yellow pattern")
-            return "Yellow leaves can indicate nitrogen deficiency, water stress, or disease. Check soil pH and nutrients, ensure proper drainage, and monitor for pests. Early intervention is key."
-        }
-        
-        if lowercasePrompt.contains("disease") || lowercasePrompt.contains("pest") {
-            print("✅ Matched English disease/pest pattern")
-            return "For disease prevention, maintain good air circulation, avoid overhead watering, and practice crop rotation. If you see symptoms, identify the specific issue and apply appropriate organic or chemical controls."
-        }
-        
-        if lowercasePrompt.contains("water") || lowercasePrompt.contains("irrigation") {
-            print("✅ Matched English water/irrigation pattern")
-            return "Water deeply but infrequently to encourage deep root growth. Check soil moisture 2-3 inches deep. Water in early morning to reduce disease risk. Adjust frequency based on weather and plant needs."
-        }
-        
-        if lowercasePrompt.contains("fertiliz") || lowercasePrompt.contains("nutrient") {
-            print("✅ Matched English fertilizer/nutrient pattern")
-            return "Apply balanced fertilizer based on soil tests. Most vegetables need NPK ratio of 10-10-10. Feed every 2-4 weeks during growing season. Organic options include compost and well-aged manure."
-        }
-        
-        // Default response
-        print("⚠️ No pattern matched, returning default response")
-        return "I can help you with various farming topics including crop management, pest control, irrigation, and soil health. Please ask me a specific question about your farming needs."
-    }
+    // Removed - no longer using mock responses
     
     private func tokenizeSimple(_ text: String) -> [Int] {
         // Very simple character-level tokenization for demo
@@ -294,98 +240,11 @@ class Gemma3nLMHandler {
         return vocabSize - 1
     }
     
-    private func decodeTokensToText(_ inputTokens: [Int], _ generatedTokens: [Int]) -> String {
-        print("📝 Input tokens: \(inputTokens.prefix(10))...")
-        print("📝 Generated tokens: \(generatedTokens.prefix(20))...")
-        
-        // Without a proper tokenizer, we'll create a simple vocabulary mapping
-        // This is a demonstration - in production, use SentencePiece or similar
-        let simpleVocab: [Int: String] = [
-            // Common tokens (these would normally come from the tokenizer's vocabulary)
-            0: "<pad>", 1: "<bos>", 2: "<eos>", 3: "<unk>",
-            100: "I", 101: "you", 102: "the", 103: "a", 104: "is", 105: "are",
-            106: "farm", 107: "crop", 108: "plant", 109: "soil", 110: "water",
-            111: "help", 112: "can", 113: "with", 114: "your", 115: "need",
-            116: "leaf", 117: "yellow", 118: "disease", 119: "pest", 120: "growth",
-            121: "recommend", 122: "check", 123: "monitor", 124: "apply", 125: "irrigation",
-            126: "fertilizer", 127: "nitrogen", 128: "temperature", 129: "moisture", 130: "harvest"
-        ]
-        
-        // Build response from generated tokens
-        var words: [String] = []
-        for token in generatedTokens {
-            if let word = simpleVocab[token] {
-                if !word.hasPrefix("<") { // Skip special tokens
-                    words.append(word)
-                }
-            } else {
-                // For unknown tokens, show the token ID
-                if generatedTokens.count < 10 { // Only show token IDs for short sequences
-                    words.append("[token:\(token)]")
-                }
-            }
-        }
-        
-        // If we have decoded words, return them
-        if !words.isEmpty {
-            return "Generated: " + words.joined(separator: " ")
-        }
-        
-        // If no words decoded but tokens were generated, show token analysis
-        if generatedTokens.count > 0 {
-            // Analyze token distribution
-            let uniqueTokens = Set(generatedTokens).count
-            let avgToken = generatedTokens.reduce(0, +) / max(1, generatedTokens.count)
-            
-            return """
-            Model generated \(generatedTokens.count) tokens.
-            Unique tokens: \(uniqueTokens)
-            Average token ID: \(avgToken)
-            Token sequence: \(generatedTokens.prefix(10).map{"\($0)"}.joined(separator: ", "))...
-            
-            Note: Proper tokenization requires the Gemma tokenizer (SentencePiece).
-            """
-        }
-        
-        return "No tokens generated. Check model configuration."
-    }
+    // Removed - no longer needed
     
-    private func decodeTokens(_ tokens: [Int]) -> String {
-        return decodeTokensToText([], tokens)
-    }
+    // Removed - no longer needed
     
-    private func generateFallbackResponse(for prompt: String, generatedTokens: [Int]) -> String {
-        let lowercasePrompt = prompt.lowercased()
-        
-        // If we generated some tokens, try to interpret them
-        if generatedTokens.count > 5 {
-            // Check if the pattern suggests a greeting
-            if generatedTokens.contains(22957) && generatedTokens.contains(31659) {
-                return "I am Kei, your AI farming assistant. I can help you with crop management, pest control, and agricultural advice. What would you like to know?"
-            }
-            
-            // Check for farming-related patterns
-            if generatedTokens.contains(7268) || generatedTokens.contains(5071) {
-                return "Based on your farming query, I recommend checking soil conditions and monitoring crop health regularly. Would you like specific advice?"
-            }
-        }
-        
-        // Context-based responses
-        if lowercasePrompt.contains("hello") || lowercasePrompt.contains("hi") || prompt.contains("こんにち") {
-            return "Hello! I'm Kei, your AI farming assistant. How can I help you with your agricultural needs today?"
-        }
-        
-        if prompt.contains("葉") || prompt.contains("黄") {
-            return "葉の変色は栄養不足、病害、または環境ストレスの兆候かもしれません。土壌のpH値と栄養状態を確認し、適切な対策を講じることをお勧めします。"
-        }
-        
-        if lowercasePrompt.contains("help") || lowercasePrompt.contains("?") {
-            return "I can assist you with:\n• Crop disease identification\n• Pest management\n• Irrigation scheduling\n• Fertilizer recommendations\n• Weather-based farming advice\n\nWhat specific issue are you facing?"
-        }
-        
-        // Default response
-        return "I'm here to help with your farming questions. Please tell me more about your crops or agricultural concerns."
-    }
+    // Removed - no longer using fallback responses
 }
 
 // Model input/output wrappers

@@ -19,6 +19,7 @@
 		6580EE152E437D1F0066A642 /* Gemma3n_LM.mlpackage in Resources */ = {isa = PBXBuildFile; fileRef = 6580EE0B2E4372060066A642 /* Gemma3n_LM.mlpackage */; };
 		6580EE172E43A1290066A642 /* GemmaTokenizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6580EE162E43A1290066A642 /* GemmaTokenizer.swift */; };
 		6580EE192E43A42D0066A642 /* SentencePieceTokenizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6580EE182E43A42D0066A642 /* SentencePieceTokenizer.swift */; };
+		6580EE1B2E43A5A50066A642 /* tokenizer.model in Resources */ = {isa = PBXBuildFile; fileRef = 6580EE1A2E43A5A50066A642 /* tokenizer.model */; };
 		74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74858FAE1ED2DC5600515810 /* AppDelegate.swift */; };
 		78129A184ACD3C9FD8761033 /* Pods_RunnerTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4C6FEBF2B453D6F7E1138E60 /* Pods_RunnerTests.framework */; };
 		9794B3E0FD0DA363320DC76D /* Pods_Runner.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0C1220D0550402159EA09E91 /* Pods_Runner.framework */; };
@@ -69,6 +70,7 @@
 		6580EE132E437B7C0066A642 /* Gemma3nLMHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gemma3nLMHandler.swift; sourceTree = "<group>"; };
 		6580EE162E43A1290066A642 /* GemmaTokenizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GemmaTokenizer.swift; sourceTree = "<group>"; };
 		6580EE182E43A42D0066A642 /* SentencePieceTokenizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentencePieceTokenizer.swift; sourceTree = "<group>"; };
+		6580EE1A2E43A5A50066A642 /* tokenizer.model */ = {isa = PBXFileReference; lastKnownFileType = file; path = tokenizer.model; sourceTree = "<group>"; };
 		74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Runner-Bridging-Header.h"; sourceTree = "<group>"; };
 		74858FAE1ED2DC5600515810 /* AppDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
@@ -161,6 +163,7 @@
 		97C146F01CF9000F007C117D /* Runner */ = {
 			isa = PBXGroup;
 			children = (
+				6580EE1A2E43A5A50066A642 /* tokenizer.model */,
 				6580EE182E43A42D0066A642 /* SentencePieceTokenizer.swift */,
 				6580EE162E43A1290066A642 /* GemmaTokenizer.swift */,
 				6580EE132E437B7C0066A642 /* Gemma3nLMHandler.swift */,
@@ -288,6 +291,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6580EE152E437D1F0066A642 /* Gemma3n_LM.mlpackage in Resources */,
+				6580EE1B2E43A5A50066A642 /* tokenizer.model in Resources */,
 				97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,

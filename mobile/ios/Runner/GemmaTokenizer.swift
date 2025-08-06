@@ -17,12 +17,43 @@ class GemmaTokenizer {
     
     init() {
         // Try to load SentencePiece model first
-        let tokenizerPath = Bundle.main.path(forResource: "tokenizer", ofType: "model") 
-            ?? "\(Bundle.main.bundlePath)/Tokenizer/tokenizer.model"
+        var tokenizerPath: String? = nil
         
-        if FileManager.default.fileExists(atPath: tokenizerPath) {
-            print("🔍 Found tokenizer model at: \(tokenizerPath)")
-            sentencePieceTokenizer = SentencePieceTokenizer(modelPath: tokenizerPath)
+        // Debug: List all resources in bundle
+        print("📁 Bundle path: \(Bundle.main.bundlePath)")
+        if let resourcePath = Bundle.main.resourcePath {
+            print("📁 Resource path: \(resourcePath)")
+            do {
+                let resourceContents = try FileManager.default.contentsOfDirectory(atPath: resourcePath)
+                print("📁 Bundle resources count: \(resourceContents.count)")
+                for resource in resourceContents.filter({ $0.contains("tokenizer") || $0.contains("model") }) {
+                    print("  - \(resource)")
+                }
+            } catch {
+                print("❌ Error listing resources: \(error)")
+            }
+        }
+        
+        // Try different locations
+        let possiblePaths = [
+            Bundle.main.path(forResource: "tokenizer", ofType: "model"),
+            Bundle.main.path(forResource: "Tokenizer/tokenizer", ofType: "model"),
+            "\(Bundle.main.bundlePath)/tokenizer.model",
+            "\(Bundle.main.bundlePath)/Tokenizer/tokenizer.model"
+        ]
+        
+        for path in possiblePaths {
+            if let p = path, FileManager.default.fileExists(atPath: p) {
+                tokenizerPath = p
+                break
+            }
+        }
+        
+        if let path = tokenizerPath {
+            print("🔍 Found tokenizer model at: \(path)")
+            sentencePieceTokenizer = SentencePieceTokenizer(modelPath: path)
+        } else {
+            print("❌ Tokenizer model not found in bundle")
         }
         
         // Fall back to basic vocabulary if SentencePiece fails
@@ -86,7 +117,7 @@ class GemmaTokenizer {
             
             // Common English words
             2000: "▁what",
-            2001: "▁how", 
+            2001: "▁how",
             2002: "▁when",
             2003: "▁where",
             2004: "▁why",
@@ -186,15 +217,16 @@ class GemmaTokenizer {
                     text += String(token.dropFirst()) // Remove ▁
                     previousWasWord = true
                 } else if token == "<unk>" {
-                    text += "[?]"
+                    // Skip unknown tokens
+                    continue
                 } else {
                     // Subword or punctuation
                     text += token
                     previousWasWord = token == "." || token == "!" || token == "?"
                 }
             } else {
-                // Unknown token
-                text += "[" + String(tokenId) + "]"
+                // Skip tokens not in vocabulary
+                continue
             }
         }
         

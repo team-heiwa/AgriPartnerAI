@@ -37,42 +37,48 @@ class SentencePieceTokenizer {
     }
     
     private func parseModelData(_ data: Data) {
-        // This is a simplified parser - in production, use proper protobuf parsing
-        // For now, we'll extract common tokens from the binary data
+        // SentencePiece model is a protobuf file
+        // We'll parse it in a simplified way to extract vocabulary
         
-        let dataString = String(data: data, encoding: .utf8) ?? ""
-        let lines = dataString.components(separatedBy: .newlines)
+        // Special tokens are at the beginning
+        vocabulary["<pad>"] = 0
+        vocabulary["<eos>"] = 1  
+        vocabulary["<bos>"] = 2
+        vocabulary["<unk>"] = 3
         
-        var tokenId = 0
+        reverseVocabulary[0] = "<pad>"
+        reverseVocabulary[1] = "<eos>"
+        reverseVocabulary[2] = "<bos>"
+        reverseVocabulary[3] = "<unk>"
         
-        // Extract tokens from the model data
-        // The actual format is more complex, but this gives us basic functionality
-        for i in 0..<min(lines.count, 10000) {
-            // Skip control characters and empty lines
-            let line = lines[i].trimmingCharacters(in: .whitespacesAndNewlines)
-            if line.isEmpty || line.count > 50 { continue }
-            
-            // Basic token extraction
-            if line.contains("▁") || line.count <= 20 {
-                vocabulary[line] = tokenId
-                reverseVocabulary[tokenId] = line
-                tokenId += 1
+        // Parse the binary data to extract vocab pieces
+        var currentIndex = 0
+        var tokenId = 4 // Start after special tokens
+        
+        while currentIndex < data.count && tokenId < 32000 {
+            // Look for string patterns in the binary data
+            // SentencePiece stores pieces as length-prefixed strings
+            if currentIndex + 2 < data.count {
+                let length = Int(data[currentIndex])
+                if length > 0 && length < 100 && currentIndex + length + 1 < data.count {
+                    let tokenData = data[(currentIndex + 1)..<(currentIndex + 1 + length)]
+                    if let token = String(data: tokenData, encoding: .utf8) {
+                        // Valid token found
+                        if token.count > 0 && !token.contains("\0") {
+                            vocabulary[token] = tokenId
+                            reverseVocabulary[tokenId] = token
+                            tokenId += 1
+                        }
+                    }
+                }
             }
+            currentIndex += 1
         }
         
-        // Ensure special tokens are set correctly
-        vocabulary["<unk>"] = unkId
-        vocabulary["<s>"] = bosId
-        vocabulary["</s>"] = eosId
-        vocabulary["<pad>"] = padId
+        print("✅ Parsed \(vocabulary.count) tokens from SentencePiece model")
         
-        reverseVocabulary[unkId] = "<unk>"
-        reverseVocabulary[bosId] = "<s>"
-        reverseVocabulary[eosId] = "</s>"
-        reverseVocabulary[padId] = "<pad>"
-        
-        // Add common tokens if not found
-        if vocabulary.count < 100 {
+        // If parsing didn't work well, add default vocabulary
+        if vocabulary.count < 1000 {
             addDefaultVocabulary()
         }
     }
@@ -135,7 +141,8 @@ class SentencePieceTokenizer {
                     }
                     text += String(token.dropFirst())
                 } else if token == "<unk>" {
-                    text += "[?]"
+                    // Skip unknown tokens
+                    continue
                 } else {
                     text += token
                 }
