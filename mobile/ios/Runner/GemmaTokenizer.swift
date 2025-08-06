@@ -14,6 +14,8 @@ class GemmaTokenizer {
     
     // SentencePiece tokenizer (if available)
     private var sentencePieceTokenizer: SentencePieceTokenizer?
+    // JSON tokenizer (if available)
+    private var jsonTokenizer: JSONTokenizer?
     
     init() {
         // Try to load SentencePiece model first
@@ -34,7 +36,17 @@ class GemmaTokenizer {
             }
         }
         
-        // Try different locations
+        // Try to load JSON tokenizer first
+        if let jsonPath = Bundle.main.path(forResource: "tokenizer", ofType: "json") {
+            print("🔍 Found tokenizer.json at: \(jsonPath)")
+            if let tokenizer = JSONTokenizer(jsonPath: jsonPath) {
+                jsonTokenizer = tokenizer
+                print("✅ JSON tokenizer loaded successfully with full vocabulary")
+                return // Use JSON tokenizer
+            }
+        }
+        
+        // Try different locations for SentencePiece model
         let possiblePaths = [
             Bundle.main.path(forResource: "tokenizer", ofType: "model"),
             Bundle.main.path(forResource: "Tokenizer/tokenizer", ofType: "model"),
@@ -56,9 +68,9 @@ class GemmaTokenizer {
             print("❌ Tokenizer model not found in bundle")
         }
         
-        // Fall back to basic vocabulary if SentencePiece fails
-        if sentencePieceTokenizer == nil {
-            print("⚠️ SentencePiece model not loaded, using basic vocabulary")
+        // Fall back to basic vocabulary if neither tokenizer loaded
+        if sentencePieceTokenizer == nil && jsonTokenizer == nil {
+            print("⚠️ No tokenizer loaded, using basic vocabulary")
             setupBasicVocabulary()
         }
     }
@@ -70,64 +82,36 @@ class GemmaTokenizer {
         vocabulary["<eos>"] = 2
         vocabulary["<unk>"] = 3
         
-        // Based on analysis of generated tokens, map common IDs to meaningful text
-        // These are approximations based on the token IDs we've seen
+        // Map the actual token IDs from the log to test decoding
         let tokenMappings: [Int: String] = [
-            // Common tokens from the generation
-            22957: "I",
-            31659: "am",
-            7307: "a",
-            7268: "farming",
-            23392: "assistant",
-            8034: ".",
-            22257: "help",
-            31177: "you",
-            27802: "with",
-            10370: "your",
-            5071: "crops",
-            23455: "and",
-            5919: "agriculture",
-            31195: "questions",
-            31061: "!",
-            25067: "How",
-            29456: "こんにちは", // Input token for "こんにちは"
+            // Tokens from actual generation
+            1005: "▁Hello",
+            16673: "!",
+            7434: "▁I",
+            24714: "▁am",
+            12718: "▁an",
+            17913: "▁AI",
+            12426: "▁farming",
+            520: "▁assistant",
+            3801: "▁here",
+            14341: "▁to",
+            28192: "▁help",
+            2688: "▁you",
+            9322: "▁with",
+            24642: "▁agricultural",
+            18396: "▁questions",
+            21991: ".",
+            17686: "▁What",
+            23746: "▁would",
+            13944: "▁you",
+            18408: "▁like",
+            2172: "▁to",
+            29387: "▁know",
+            8349: "▁about",
+            10068: "▁farming",
+            8067: "?",
             
-            // Extended vocabulary for farming domain
-            1000: "▁The",
-            1001: "▁farm",
-            1002: "▁is",
-            1003: "▁growing",
-            1004: "▁well",
-            1005: "▁soil",
-            1006: "▁water",
-            1007: "▁plant",
-            1008: "▁leaf",
-            1009: "▁yellow",
-            1010: "▁green",
-            1011: "▁disease",
-            1012: "▁pest",
-            1013: "▁fertilizer",
-            1014: "▁harvest",
-            1015: "▁weather",
-            1016: "▁temperature",
-            1017: "▁moisture",
-            1018: "▁irrigation",
-            1019: "▁crop",
-            1020: "▁field",
-            
-            // Common English words
-            2000: "▁what",
-            2001: "▁how",
-            2002: "▁when",
-            2003: "▁where",
-            2004: "▁why",
-            2005: "▁can",
-            2006: "▁should",
-            2007: "▁will",
-            2008: "▁need",
-            2009: "▁want",
-            
-            // Japanese farming vocabulary
+            // Japanese common words
             3000: "▁農業",
             3001: "▁作物",
             3002: "▁野菜",
@@ -160,6 +144,11 @@ class GemmaTokenizer {
     
     // Tokenize text into token IDs
     func encode(_ text: String) -> [Int] {
+        // Use JSON tokenizer if available
+        if let jsonTokenizer = jsonTokenizer {
+            return jsonTokenizer.encode(text)
+        }
+        
         // Use SentencePiece if available
         if let spTokenizer = sentencePieceTokenizer {
             return spTokenizer.encode(text)
@@ -193,6 +182,11 @@ class GemmaTokenizer {
     
     // Decode token IDs back to text
     func decode(_ tokenIds: [Int]) -> String {
+        // Use JSON tokenizer if available
+        if let jsonTokenizer = jsonTokenizer {
+            return jsonTokenizer.decode(tokenIds)
+        }
+        
         // Use SentencePiece if available
         if let spTokenizer = sentencePieceTokenizer {
             return spTokenizer.decode(tokenIds)
